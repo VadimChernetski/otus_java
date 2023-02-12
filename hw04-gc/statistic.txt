@@ -1,0 +1,22 @@
+-Xms: 256   -Xmx: 256   result(ms): OutOfMemory
+-Xms: 512   -Xmx: 512   result(ms): 5890
+-Xms: 1024  -Xmx: 1024  result(ms): 5087
+-Xms: 1024  -Xmx: 1024  result(ms): 5087
+-Xms: 2048  -Xmx: 2048  result(ms): 4578
+-Xms: 3072  -Xmx: 3072  result(ms): 4137
+-Xms: 3584  -Xmx: 3584  result(ms): 4036
+-Xms: 4096  -Xmx: 4096  result(ms): 3945
+-Xms: 4096  -Xmx: 4096  result(ms): 3819
+-Xms: 5120  -Xmx: 5120  result(ms): 3725
+-Xms: 5120  -Xmx: 5120  result(ms): 3878
+
+
+Свыше 3-3.5 Gb нет смысла
+
+Изменив все поля класса Summator c Integer на int при памяти 3.5 Gb время 1469ms
+
+--------------------
+Изменив все поля класса Data c Integer на int при памяти 3.5 Gb время 1101ms
+
+
+
