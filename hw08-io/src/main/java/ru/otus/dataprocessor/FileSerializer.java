@@ -20,7 +20,7 @@ public class FileSerializer implements Serializer {
   @Override
   public void serialize(Map<String, Double> data) {
     try {
-      final String result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
+      var result = objectMapper.writeValueAsString(data);
       Files.write(path, result.getBytes());
     } catch (IOException e) {
       throw new FileProcessException(e);

@@ -5,45 +5,42 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import ru.otus.model.Measurement;
 
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class ResourcesFileLoader implements Loader {
 
     private final String fileName;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final JavaType measurementListType;
+    private ObjectMapper objectMapper;
+    private JavaType measurementListType;
 
-    {
-        SimpleModule module = new SimpleModule();
-        measurementListType = objectMapper.getTypeFactory().constructCollectionType(List.class, Measurement.class);
-        module.addDeserializer(Measurement.class, new MeasurementDeserializer());
-        objectMapper.registerModule(module);
-    }
 
     public ResourcesFileLoader(String fileName) {
         this.fileName = fileName;
+        initObjectMapper();
     }
 
     @Override
     public List<Measurement> load() {
         List<Measurement> result;
-        try {
-            final URL resource = ResourcesFileLoader.class.getClassLoader().getResource(fileName);
-            if (resource != null) {
-                var file = Files.readString(Path.of(resource.getFile()));
-                result = objectMapper.readValue(file, measurementListType);
-            } else {
-                result = Collections.emptyList();
-            }
+        try(var resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
+            var bufferedReader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
+          var resultAsString = new StringBuilder();
+          bufferedReader.lines().forEach(resultAsString::append);
+          result = objectMapper.readValue(resultAsString.toString(), measurementListType);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot parse input data from json file");
+            throw new FileProcessException(e);
         }
-        //читает файл, парсит и возвращает результат
         return result;
+    }
+
+    private void initObjectMapper() {
+        objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        measurementListType = objectMapper.getTypeFactory().constructCollectionType(List.class, Measurement.class);
+        module.addDeserializer(Measurement.class, new MeasurementDeserializer());
+        objectMapper.registerModule(module);
     }
 
 }
