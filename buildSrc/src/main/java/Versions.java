@@ -3,4 +3,6 @@ public interface Versions {
     String lombok = "1.18.24";
 
     String asm = "9.2";
+
+    String reflections = "0.10.2";
 }
