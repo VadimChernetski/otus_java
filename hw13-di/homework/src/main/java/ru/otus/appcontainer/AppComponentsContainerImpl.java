@@ -7,6 +7,9 @@ import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 import ru.otus.appcontainer.exception.ComponentCreationException;
 import ru.otus.appcontainer.exception.NoSuchComponentException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
@@ -27,14 +30,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
   }
 
   public AppComponentsContainerImpl(Class<?>... configClasses) {
-    for (Class<?> configClass : configClasses) {
-      processConfig(configClass);
-    }
+    handleConfigurations(Set.of(configClasses));
   }
 
   public AppComponentsContainerImpl(String classPath) {
     handleConfigurationsInClassPath(classPath);
-    handleComponentsInClassPath(classPath);
   }
 
   private void processConfig(Class<?> configClass) {
@@ -72,79 +72,51 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
   }
 
   private void handleConfigurationsInClassPath(String classPath) {
-    new Reflections(classPath).getTypesAnnotatedWith(AppComponentsContainerConfig.class).stream()
-      .sorted((firstConfig, secondConfig) -> {
-        var firstAnnotation =
-          firstConfig.getAnnotation(AppComponentsContainerConfig.class);
-        var secondAnnotation =
-          secondConfig.getAnnotation(AppComponentsContainerConfig.class);
-        return Integer.compare(firstAnnotation.order(), secondAnnotation.order());
-      })
+    var configurations = new Reflections(classPath)
+      .getTypesAnnotatedWith(AppComponentsContainerConfig.class);
+    handleConfigurations(configurations);
+  }
+
+  private void handleConfigurations(Set<Class<?>> configs) {
+    configs.stream()
+      .sorted(Comparator.comparingInt(c -> c.getAnnotation(AppComponentsContainerConfig.class).order()))
       .forEach(this::handConfigurationClass);
   }
 
-  private void handleComponentsInClassPath(String classPath) {
-    new Reflections(classPath).getTypesAnnotatedWith(AppComponent.class).stream()
-      .sorted((firstConfig, secondConfig) -> {
-        var firstAnnotation =
-          firstConfig.getAnnotation(AppComponent.class);
-        var secondAnnotation =
-          secondConfig.getAnnotation(AppComponent.class);
-        return Integer.compare(firstAnnotation.order(), secondAnnotation.order());
-      })
-      .forEach(clazz -> {
-        var componentName = clazz.getAnnotation(AppComponent.class).name();
-        if (appComponentsByName.containsKey(componentName)) {
-          throw new ComponentCreationException("component with name: " + componentName + " exists");
-        }
-        var classInstance = createClassInstance(clazz);
-        appComponents.add(classInstance);
-        appComponentsByName.put(componentName, classInstance);
-      });
-  }
-
   private <T> void handConfigurationClass(Class<T> configClass) {
-    var classInstance = createClassInstance(configClass);
+    T classInstance;
+    try {
+      final Constructor<T> constructor = configClass.getConstructor();
+      constructor.setAccessible(true);
+      classInstance = constructor.newInstance();
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new ComponentCreationException(e);
+    }
     Arrays.stream(configClass.getDeclaredMethods())
       .filter(method -> method.isAnnotationPresent(AppComponent.class))
-      .sorted((firstMethod, secondMethod) -> {
-        var firstAnnotation = firstMethod.getAnnotation(AppComponent.class);
-        var secondAnnotation = secondMethod.getAnnotation(AppComponent.class);
-        return Integer.compare(firstAnnotation.order(), secondAnnotation.order());
-      })
-      .forEach(method -> {
-        var componentName = method.getAnnotation(AppComponent.class).name();
-        if (appComponentsByName.containsKey(componentName)) {
-          throw new ComponentCreationException("component with name: " + componentName + " exists");
-        }
-        var objects = Arrays.stream(method.getParameterTypes())
-          .map(this::getAppComponent)
-          .toArray();
-        method.setAccessible(true);
-        try {
-          var component = method.invoke(classInstance, objects);
-          appComponents.add(component);
-          appComponentsByName.put(componentName, component);
-        } catch (Exception e) {
-          throw new ComponentCreationException(e.getMessage());
-        }
-      });
+      .sorted(Comparator.comparingInt(c -> c.getAnnotation(AppComponent.class).order()))
+      .forEach(method -> createComponentByMethodInvocation(classInstance, method));
   }
 
-  public <T> T createClassInstance(Class<T> clazz) {
-    var constructors = clazz.getConstructors();
-    if (constructors.length != 1) {
-      throw new ComponentCreationException("incorrect amount of constructors");
-    }
-    var constructor = constructors[0];
-    constructor.setAccessible(true);
-    var parameters = Arrays.stream(constructor.getParameterTypes())
+  private <T> void createComponentByMethodInvocation(T classInstance, Method method) {
+    var componentName = method.getAnnotation(AppComponent.class).name();
+    isComponentNameUnique(componentName);
+    var objects = Arrays.stream(method.getParameterTypes())
       .map(this::getAppComponent)
       .toArray();
+    method.setAccessible(true);
     try {
-      return (T) constructor.newInstance(parameters);
+      var component = method.invoke(classInstance, objects);
+      appComponents.add(component);
+      appComponentsByName.put(componentName, component);
     } catch (Exception e) {
-      throw new ComponentCreationException(e.getMessage());
+      throw new ComponentCreationException(e);
+    }
+  }
+
+  private void isComponentNameUnique(String componentName) {
+    if (appComponentsByName.containsKey(componentName)) {
+      throw new ComponentCreationException("component with name: " + componentName + " exists");
     }
   }
 
