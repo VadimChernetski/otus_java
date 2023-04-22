@@ -2,7 +2,6 @@ package ru.otus.config;
 
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
-import ru.otus.appcontainer.api.ComponentScan;
 import ru.otus.services.EquationPreparer;
 import ru.otus.services.EquationPreparerImpl;
 import ru.otus.services.GameProcessor;
@@ -13,7 +12,6 @@ import ru.otus.services.PlayerService;
 import ru.otus.services.PlayerServiceImpl;
 
 @AppComponentsContainerConfig(order = 2)
-@ComponentScan
 public class AppConfig {
 
     @AppComponent(order = 0, name = "equationPreparer")
