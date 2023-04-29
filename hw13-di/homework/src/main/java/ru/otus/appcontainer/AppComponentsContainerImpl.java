@@ -17,14 +17,6 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
   private final List<Object> appComponents = new ArrayList<>();
   private final Map<String, Object> appComponentsByName = new HashMap<>();
 
-  public List<Object> getAppComponents() {
-    return appComponents;
-  }
-
-  public Map<String, Object> getAppComponentsByName() {
-    return appComponentsByName;
-  }
-
   public AppComponentsContainerImpl(Class<?> initialConfigClass) {
     processConfig(initialConfigClass);
   }
