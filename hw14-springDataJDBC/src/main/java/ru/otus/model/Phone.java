@@ -1,21 +1,15 @@
 package ru.otus.model;
 
 import jakarta.annotation.Nonnull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 @Table(name = "phone")
 public class Phone {
 
@@ -23,9 +17,18 @@ public class Phone {
     private Long id;
 
     @Nonnull
-    private String number;
+    private final String number;
 
-    @Column("client_id")
     private Long clientId;
 
+    @PersistenceCreator
+    public Phone(Long id, String number, Long clientId) {
+        this.id = id;
+        this.number = number;
+        this.clientId = clientId;
+    }
+
+    public Phone(String number) {
+        this.number = number;
+    }
 }
