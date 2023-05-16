@@ -6,38 +6,51 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Runner {
-  static Lock lock = new ReentrantLock();
-  static Condition condition = lock.newCondition();
+
+  private static Object monitor = new Object();
+
+  private static String currentThread = "Second";
 
   public static void main(String[] args) {
-    Thread first = new Thread(Runner::print);
-    Thread second = new Thread(Runner::print);
-    first.start();
+    Thread first = new Thread(() -> print("Second"));
+    first.setName("First");
+    Thread second = new Thread(() -> print("First"));
+    second.setName("Second");
     second.start();
+    first.start();
   }
 
-  private static void print()  {
+  private static void print(String nextThreadName)  {
     int index = 1;
-    try {
       while (index <= 10) {
-        lock.lock();
-        condition.await(2, TimeUnit.SECONDS);
-        System.out.println(Thread.currentThread().getName() + ": " + index++);
-        condition.signal();
-        lock.unlock();
+        synchronized (monitor) {
+          try {
+            while (!Thread.currentThread().getName().equals(currentThread)) {
+              monitor.wait();
+            }
+            System.out.println(Thread.currentThread().getName() + ": " + index++);
+            currentThread = nextThreadName;
+            monitor.notifyAll();
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+        }
       }
-      index--;
+      index = 9;
       while (index > 0) {
-        lock.lock();
-        condition.await(2, TimeUnit.SECONDS);
-        System.out.println(Thread.currentThread().getName() + ": " + --index);
-        condition.signal();
-        lock.unlock();
+        synchronized (monitor) {
+          try {
+            while (!Thread.currentThread().getName().equals(currentThread)) {
+              monitor.wait();
+            }
+            System.out.println(Thread.currentThread().getName() + ": " + index--);
+            currentThread = nextThreadName;
+            monitor.notifyAll();
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+        }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
-
 }
 
