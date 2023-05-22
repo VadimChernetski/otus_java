@@ -1,0 +1,106 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Clients</title>
+    <script>
+      let phoneCounter = 2;
+
+      function addPhoneInput() {
+        const newClientElement = document.getElementById('new-client');
+        const phoneInputElement = document.createElement('input');
+        phoneInputElement.setAttribute('id', 'phone' + phoneCounter);
+        phoneInputElement.setAttribute('placeholder', 'Phone' + phoneCounter++)
+        const phoneDivElement = document.createElement('div');
+        phoneDivElement.appendChild(phoneInputElement);
+        newClientElement.appendChild(phoneDivElement);
+      }
+
+      function saveClient() {
+        const client = {};
+        const phones = [];
+        for (let i = 1; i < phoneCounter; i++) {
+          let phoneInput = document.getElementById('phone' + i);
+          phones[i - 1] = phoneInput.value;
+          if (i === 1) {
+            phoneInput.value = '';
+          } else {
+            phoneInput.remove();
+          }
+        }
+        phoneCounter = 2;
+        client.phones = phones;
+        const nameInput = document.getElementById('name');
+        client.name = nameInput.value;
+        nameInput.value = '';
+        const streetInput = document.getElementById('street');
+        client.street = streetInput.value;
+        streetInput.value = '';
+        fetch('http://localhost:8080/api/client', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(client)
+        })
+            .then(() => document.location.reload())
+            .then(response => console.log(JSON.stringify(response)))
+      }
+
+      function loadClients() {
+        fetch('http://localhost:8080/api/client', {
+          method: 'GET',
+        })
+            .then(response => {
+              response.json().then(clients => {
+                console.log(clients);
+                const tbody = document.getElementById('tbody');
+                for (i = 0; i < clients.length; i++) {
+                  const tr = document.createElement('tr');
+                  const id = document.createElement('td');
+                  id.innerHTML = clients[i].id;
+                  const name = document.createElement('td');
+                  name.innerHTML = clients[i].name;
+                  const street = document.createElement('td');
+                  street.innerHTML = clients[i].street;
+                  const phones = document.createElement('td');
+                  phones.innerHTML = clients[i].phones;
+                  tr.appendChild(id);
+                  tr.appendChild(name);
+                  tr.appendChild(street);
+                  tr.appendChild(phones);
+                  tbody.appendChild(tr);
+                }
+              })
+            })
+      }
+    </script>
+</head>
+
+<body onload="loadClients()">
+<table style="width: 700px">
+    <thead>
+    <tr>
+        <td style="width: 50px">Id</td>
+        <td style="width: 150px">Name</td>
+        <td style="width: 100px">Street</td>
+        <td style="width: 500px">Phones</td>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+    </tbody>
+</table>
+
+<button onclick="saveClient()">Add new client</button>
+<div id="new-client">
+    <div>
+        <input id="name" type="text" placeholder="Name">
+    </div>
+    <div>
+        <input id="street" type="text" placeholder="Street">
+    </div>
+    <div>
+        <input id="phone1" type="text" placeholder="Phone1">
+    </div>
+</div>
+<button onclick="addPhoneInput()">One more phone</button>
+</body>
+</html>
