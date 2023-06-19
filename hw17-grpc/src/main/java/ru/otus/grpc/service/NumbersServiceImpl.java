@@ -41,7 +41,6 @@ public class NumbersServiceImpl extends NumbersServiceGrpc.NumbersServiceImplBas
 
         executor.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
 
-//        super.getNumber(request, responseObserver);
     }
 
 }
