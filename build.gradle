@@ -27,6 +27,13 @@ allprojects {
                 dependency("io.grpc:grpc-stub:${Versions.grpc}")
                 dependency("com.github.tomakehurst:wiremock:${Versions.wiremock}")
                 dependency("io.r2dbc:r2dbc-postgresql:${Versions.r2dbcPostgresql}")
+
+
+                dependency("org.webjars:sockjs-client:${Versions.sockjs}")
+                dependency("org.webjars:stomp-websocket:${Versions.stomp}")
+                dependency("org.webjars:bootstrap:${Versions.bootstrap}")
+                dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.springDocOpenapiUi}")
+                dependency("com.google.code.findbugs:jsr305:${Versions.jsr305}")
             }
         }
     }
