@@ -34,6 +34,9 @@ allprojects {
                 dependency("org.webjars:bootstrap:${Versions.bootstrap}")
                 dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.springDocOpenapiUi}")
                 dependency("com.google.code.findbugs:jsr305:${Versions.jsr305}")
+                dependency("io.jsonwebtoken:jjwt:${Versions.jwt}")
+                dependency("org.liquibase:liquibase-core:${Versions.liquibase}")
+
             }
         }
     }

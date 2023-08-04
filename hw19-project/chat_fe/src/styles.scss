@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.main-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.width-100 {
+  width: 100%;
+}
+
+.mgt-2 {
+  margin-top: 2rem;
+}
+.height-3 {
+  height: 3rem;
+}
+
+input {
+  width: 100%;
+}
+
+.mdc-text-field {
+  padding: 0 8px 0 0 !important;
+}
+
+.auth-form {
+  width: 20em;
+  margin: 1rem auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.button {
+  background: #84d8e3;
+  height: 3rem;
+  border-radius: 1.5rem;
+  border: unset;
+}

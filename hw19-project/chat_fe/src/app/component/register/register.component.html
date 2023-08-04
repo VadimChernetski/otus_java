@@ -1,0 +1,26 @@
+<div class="main-container">
+  <div class="auth-form">
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field class="width-100 mgt-2 height-3">
+          <input type="text" matInput [formControl]="email" placeholder="pat@example.com"/>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field class="width-100 mgt-2 height-3">
+          <input type="text" matInput [formControl]="nickname" placeholder="nickname"/>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <mat-form-field class="width-100 mgt-2 height-3">
+          <input type="password" matInput [formControl]="password" placeholder="password"/>
+        </mat-form-field>
+      </div>
+    </div>
+    <button class="button register-button" (click)="register()">REGISTER</button>
+  </div>
+</div>

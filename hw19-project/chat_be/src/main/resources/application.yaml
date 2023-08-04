@@ -1,0 +1,16 @@
+
+server:
+  servlet:
+    context-path: /chat
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5430/chat
+    username: usr
+    password: pwd
+  jpa:
+    open-in-view: off
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+logging:
+  level:
+    web: trace
