@@ -1,0 +1,11 @@
+<div class="header">
+  <ng-container *ngIf="isAuthenticationPage">
+    <div (click)="onRegisterClick()" class="button">Register</div>
+  </ng-container>
+  <ng-container *ngIf="isAuthenticationPage">
+    <div (click)="onLoginClick()" class="button">Login</div>
+  </ng-container>
+  <ng-container *ngIf="!isAuthenticationPage">
+    <div (click)="onLogoutClick()" class="button">Logout</div>
+  </ng-container>
+</div>

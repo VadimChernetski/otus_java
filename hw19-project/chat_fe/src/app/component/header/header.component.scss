@@ -1,0 +1,22 @@
+.header {
+  background: rgb(129, 165, 248);
+  top: 0;
+  display: flex;
+  flex-flow: row-reverse;
+  height: 3rem;
+  width: 100%;
+
+  .button {
+    background: #84d8e3;
+    position: relative;
+    height: 2.5rem;
+    border-radius: 10px;
+    display: table-cell;
+    padding: 0 10px;
+    vertical-align: middle;
+    margin: 0 10px;
+    top: 50%;
+    transform: translate(0, -50%);
+    line-height: 2.5rem;
+  }
+}
