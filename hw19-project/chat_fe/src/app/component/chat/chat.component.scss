@@ -1,0 +1,44 @@
+.chat-container {
+  height: 90%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  .users-list {
+    width: 20%;
+    height: 100%;
+
+    .user {
+      border-radius: 1rem;
+      background: wheat;
+      margin: 1rem;
+      text-align: center;
+      padding: 1rem 1rem;
+    }
+  }
+
+  .chat {
+    width: 80%;
+    height: 100%;
+
+    .messages {
+      width: 90%;
+      height: 40%;
+      margin: 1rem;
+      padding: 1rem;
+      border: solid gray;
+      overflow: scroll;
+
+      .right {
+        text-align: right;
+      }
+    }
+
+    .input {
+      height: 30%;
+      .send-button {
+        width: 25%;
+      }
+    }
+  }
+}

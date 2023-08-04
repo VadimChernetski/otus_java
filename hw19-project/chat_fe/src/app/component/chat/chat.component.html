@@ -1,0 +1,26 @@
+<div class="chat-container">
+  <div class="users-list">
+    <div>
+      <ng-container *ngFor="let user of users">
+        <div class="user" (click)="startChat(user.id)">
+          {{user.nickname}}
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="chat">
+    <ng-container *ngIf="openedChat !== undefined && openedChat !== null">
+      <div class="messages">
+        <ng-container *ngFor="let message of chatMessages">
+          <div [ngClass]="{right:message.authorId === currentUser.id}">{{message.text}}</div>
+        </ng-container>
+      </div>
+      <div class="input">
+        <mat-form-field class="width-100 mgt-2 height-3">
+          <input type="text" matInput [formControl]="massage" placeholder="Type..."/>
+        </mat-form-field>
+        <button class="send-button" (click)="sendMessage()">Send</button>
+      </div>
+    </ng-container>
+  </div>
+</div>
